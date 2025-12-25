@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eğitim Portalı | Kişiselleştirilmiş Öğrenme Sistemi</title>
+    <style>
+        :root {
+            --eba-blue: #2c3e50;
+            --eba-orange: #e67e22;
+            --eba-light: #f4f7f6;
+            --sidebar-width: 250px;
+            --success-green: #27ae60;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body { background-color: var(--eba-light); min-height: 100vh; }
+
+        /* Giriş Ekranı */
+        .login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--eba-blue), #34495e);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+
+        .login-box {
+            background: white; padding: 40px; border-radius: 15px; width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;
+        }
+
+        /* Ana Portal Yapısı (Sidebar + İçerik) */
+        .portal-wrapper { display: none; min-height: 100vh; }
+
+        .sidebar {
+            width: var(--sidebar-width); background: var(--eba-blue); color: white;
+            position: fixed; height: 100vh; padding: 20px;
+        }
+
+        .sidebar h2 { color: var(--eba-orange); margin-bottom: 30px; font-size: 1.5em; }
+
+        .nav-item {
+            padding: 15px; margin-bottom: 10px; cursor: pointer; border-radius: 8px;
+            transition: 0.3s; display: flex; align-items: center;
+        }
+
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--eba-orange); }
+
+        .main-content { margin-left: var(--sidebar-width); padding: 40px; width: calc(100% - var(--sidebar-width)); }
+
+        /* Üst Bilgi Barı */
+        .top-bar {
+            background: white; padding: 20px 40px; margin-bottom: 30px;
+            border-radius: 12px; display: flex; justify-content: space-between;
+            align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Kart Tasarımları (EBA Tarzı) */
+        .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+
+        .card {
+            background: white; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s;
+            border-top: 5px solid var(--eba-orange);
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .card-body { padding: 25px; }
+
+        .tag {
+            display: inline-block; padding: 5px 12px; border-radius: 20px;
+            font-size: 0.8em; font-weight: bold; margin-bottom: 10px;
+        }
+
+        /* Zeka Türlerine Özel Renkler */
+        .tag-kinesthetic { background: #ffeaa7; color: #d35400; }
+        .tag-logical { background: #fab1a0; color: #c0392b; }
+        .tag-spatial { background: #81ecec; color: #0097e6; }
+
+        /* Test ve Sonuç */
+        .test-container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 15px; }
+        
+        .btn {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; transition: 0.3s; margin-top: 10px;
+        }
+
+        .btn-primary { background: var(--eba-orange); color: white; }
+        .btn-secondary { background: #eee; color: #333; }
+
+        .option {
+            padding: 15px; border: 2px solid #eee; border-radius: 10px;
+            margin-bottom: 10px; cursor: pointer; transition: 0.3s;
+        }
+
+        .option:hover { border-color: var(--eba-orange); background: #fffcf9; }
+
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="login-overlay" id="loginScreen">
+        <div class="login-box">
+            <h1 style="color: var(--eba-blue); margin-bottom: 10px;">EBA Akademik</h1>
+            <p>TÜBİTAK Proje Portalı</p>
+            <input type="text" id="username" placeholder="Kullanıcı Adı">
+            <input type="password" id="password" placeholder="Şifre">
+            <button class="btn btn-primary" onclick="handleLogin()">Giriş Yap</button>
+            <button class="btn btn-secondary" onclick="alert('Kayıt sistemi TÜBİTAK prototipi için aktiftir.')">Kayıt Ol</button>
+        </div>
+    </div>
+
+    <div class="portal-wrapper" id="portal">
+        <div class="sidebar">
+            <h2>Portal Menü</h2>
+            <div class="nav-item active">🏠 Ana Sayfa</div>
+            <div class="nav-item">📚 Derslerim</div>
+            <div class="nav-item">📊 Gelişim Raporu</div>
+            <div class="nav-item">🏆 Başarılarım</div>
+            <div class="nav-item" onclick="location.reload()" style="margin-top: 50px;">🚪 Çıkış Yap</div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-bar">
+                <div>
+                    <h3 id="welcomeMsg">Hoş Geldin!</h3>
+                    <small id="intelligenceLabel">Zeka Türü: Tespit Edilmedi</small>
+                </div>
+                <div style="color: var(--eba-orange); font-weight: bold;">Puan: 1250 XP</div>
+            </div>
+
+            <div id="dynamicArea">
+                <div id="testSection" class="test-container">
+                    <h2 style="margin-bottom: 20px;">Öğrenme Stili Testi</h2>
+                    <p style="color: #666; margin-bottom: 20px;">Sana en uygun eğitim içeriklerini hazırlamamız için bu testi çözmelisin.</p>
+                    <div id="questionBox"></div>
+                </div>
+
+                <div id="learningMaterials" style="display: none;">
+                    <h2 style="margin-bottom: 25px;">Sana Özel Öğrenme Kitaplığı</h2>
+                    <div class="content-grid" id="materialsGrid">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = "";
+        let answers = { kinesthetic: 0, logical: 0, spatial: 0, linguistic: 0 };
+        let currentQ = 0;
+
+        const questions = [
+            { q: "Bir konuyu en iyi nasıl anlarsın?", options: [
+                { t: "Kendi başıma deney yaparak ve hareket ederek", type: "kinesthetic" },
+                { t: "Şema, grafik ve resimlere bakarak", type: "spatial" },
+                { t: "Mantıksal sırasını ve verilerini inceleyerek", type: "logical" },
+                { t: "Okuyarak ve notlar alarak", type: "linguistic" }
+            ]},
+            { q: "Boş zamanlarında hangisini tercih edersin?", options: [
+                { t: "Spor yapmak veya bir şeyler inşa etmek", type: "kinesthetic" },
+                { t: "Bulmaca çözmek veya strateji oyunu oynamak", type: "logical" },
+                { t: "Resim yapmak veya film izlemek", type: "spatial" },
+                { t: "Kitap okumak veya günlük yazmak", type: "linguistic" }
+            ]}
+        ];
+
+        // Zeka Türlerine Göre Özel İçerik Havuzu (TÜBİTAK Önerileri Dahil)
+        const contentDatabase = {
+            kinesthetic: [
+                { title: "Evde Kimya Deneyi", desc: "Mutfaktaki malzemelerle asit-baz tepkimesini kendin yap!", tag: "Deney Yap", class: "tag-kinesthetic" },
+                { title: "Simülasyon Odası", desc: "3D ortamda parçaları birleştirerek motoru çalıştır.", tag: "Uygulama", class: "tag-kinesthetic" }
+            ],
+            logical: [
+                { title: "Veri Analizi Eğitimi", desc: "Sayısal verileri kullanarak geleceği tahmin et.", tag: "Mantık", class: "tag-logical" },
+                { title: "Algoritma Temelleri", desc: "Adım adım problem çözme yeteneğini geliştir.", tag: "Matematik", class: "tag-logical" }
+            ],
+            spatial: [
+                { title: "İnfografiklerle Tarih", desc: "Tüm olayları renkli zihin haritalarıyla keşfet.", tag: "Görsel", class: "tag-spatial" },
+                { title: "Mimari Tasarım", desc: "Geometrik şekillerle kendi şehrini tasarla.", tag: "Tasarım", class: "tag-spatial" }
+            ]
+        };
+
+        function handleLogin() {
+            currentUser = document.getElementById('username').value;
+            if(!currentUser) return alert("İsim giriniz.");
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('portal').style.display = 'block';
+            document.getElementById('welcomeMsg').textContent = `Hoş Geldin, ${currentUser}`;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQ];
+            let html = `<h3>${q.q}</h3><div style="margin-top:20px">`;
+            q.options.forEach(opt => {
+                html += `<div class="option" onclick="nextQuestion('${opt.type}')">${opt.t}</div>`;
+            });
+            html += `</div>`;
+            document.getElementById('questionBox').innerHTML = html;
+        }
+
+        function nextQuestion(type) {
+            answers[type]++;
+            currentQ++;
+            if(currentQ < questions.length) {
+                showQuestion();
+            } else {
+                calculateResult();
+            }
+        }
+
+        function calculateResult() {
+            const winner = Object.keys(answers).reduce((a, b) => answers[a] > answers[b] ? a : b);
+            document.getElementById('testSection').style.display = 'none';
+            document.getElementById('learningMaterials').style.display = 'block';
+            document.getElementById('intelligenceLabel').textContent = `Öğrenme Stiliniz: ${winner.toUpperCase()}`;
+            
+            loadMaterials(winner);
+        }
+
+        function loadMaterials(type) {
+            const grid = document.getElementById('materialsGrid');
+            const data = contentDatabase[type] || contentDatabase['logical']; // Varsayılan
+            
+            let html = "";
+            data.forEach(item => {
+                html += `
+                    <div class="card">
+                        <div class="card-body">
+                            <span class="tag ${item.class}">${item.tag}</span>
+                            <h4>${item.title}</h4>
+                            <p style="color:#666; font-size:0.9em; margin:10px 0;">${item.desc}</p>
+                            <button class="btn btn-primary" style="font-size:0.8em;">İçeriğe Git</button>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
